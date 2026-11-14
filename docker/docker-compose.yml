@@ -1,0 +1,23 @@
+# Example deployment with the published image. Put it behind a reverse proxy with TLS and set
+# PUBLIC_URL to its public origin (e.g. in docker/.env, never committed). JWT_SECRET is optional:
+# without it the server generates one and keeps it in the data volume.
+# `docker compose up -d` pulls the image; `docker compose up --build` builds it from this checkout.
+services:
+  server:
+    image: ghcr.io/elrubenof/bc-launcher-server:${SERVER_VERSION:-latest}
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3000}
+      JWT_SECRET: ${JWT_SECRET:-}
+      # Optional proxy of Mojang's session server (README → "Player identity"); not needed here.
+      MOJANG_SESSION_URL: ${MOJANG_SESSION_URL:-}
+    volumes:
+      - data:/data
+
+volumes:
+  data:

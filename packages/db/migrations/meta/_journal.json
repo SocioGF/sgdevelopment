@@ -1,0 +1,62 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1793826703349,
+      "tag": "0000_init",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1793829365156,
+      "tag": "0001_admins_and_assets",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1793837110031,
+      "tag": "0002_instances_and_blobs",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1793839950486,
+      "tag": "0003_players_and_access",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1793866788114,
+      "tag": "0004_news",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1793869949067,
+      "tag": "0005_server_secrets",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1793875143360,
+      "tag": "0006_drop_organization_icon",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1793891637678,
+      "tag": "0007_web_tabs",
+      "breakpoints": true
+    }
+  ]
+}

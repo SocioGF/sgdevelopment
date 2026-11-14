@@ -1,0 +1,40 @@
+{
+  "name": "sgdevelopment",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "pnpm build:web",
+    "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "dev:worker": "pnpm build:web && wrangler d1 migrations apply DB --local && wrangler dev",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "vitest run",
+    "openapi": "pnpm --filter @bc-launcher-server/api openapi",
+    "db:generate": "pnpm --filter @bc-launcher-server/db generate",
+    "dev:web": "pnpm --filter @bc-launcher-server/web dev",
+    "build:web": "pnpm --filter @bc-launcher-server/web build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4",
+    "@cloudflare/workers-types": "5.20261103.1",
+    "typescript": "7.0.2",
+    "vitest": "5.1.0",
+    "wrangler": "4.157.0"
+  },
+  "cloudflare": {
+    "bindings": {
+      "DB": {
+        "description": "D1 database with the organization's settings, admins, instances, players and news."
+      },
+      "BLOBS": {
+        "description": "R2 bucket with the instance files, logos and images, stored by sha256."
+      }
+    }
+  }
+}

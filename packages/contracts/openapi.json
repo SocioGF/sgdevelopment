@@ -1,0 +1,5810 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "BC Launcher Server",
+    "version": "1.0.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "playerToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "The token from `POST /api/v1/auth/verify`."
+      }
+    },
+    "schemas": {
+      "DiscoveryDocument": {
+        "type": "object",
+        "properties": {
+          "discoveryVersion": {
+            "type": "number",
+            "enum": [
+              1
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "logoUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "links": {
+            "type": "object",
+            "properties": {
+              "discord": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              },
+              "web": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              }
+            },
+            "required": [
+              "discord",
+              "web"
+            ]
+          },
+          "serverVersion": {
+            "type": "string"
+          },
+          "apiVersions": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          },
+          "minLauncherVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "auth": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "mojang-session",
+                  "unverified"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "discoveryVersion",
+          "visibility",
+          "name",
+          "description",
+          "logoUrl",
+          "links",
+          "serverVersion",
+          "apiVersions",
+          "minLauncherVersion",
+          "capabilities",
+          "auth"
+        ]
+      },
+      "SetupStatus": {
+        "type": "object",
+        "properties": {
+          "required": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "required"
+        ]
+      },
+      "Admin": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "admin",
+              "editor"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "role"
+        ]
+      },
+      "Problem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ]
+      },
+      "SetupRequest": {
+        "type": "object",
+        "properties": {
+          "organizationName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "username": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_.-]{2,31}$"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "organizationName",
+          "username",
+          "password"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "OrganizationSettings": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "logoUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "discordUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "webUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "minLauncherVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "publicUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "logoUrl",
+          "discordUrl",
+          "webUrl",
+          "visibility",
+          "minLauncherVersion",
+          "publicUrl"
+        ]
+      },
+      "UpdateOrganizationSettings": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "discordUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500,
+            "format": "uri"
+          },
+          "webUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500,
+            "format": "uri"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "minLauncherVersion": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+          },
+          "whitelistJoinedPlayers": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "discordUrl",
+          "webUrl",
+          "visibility",
+          "minLauncherVersion"
+        ]
+      },
+      "AdminListItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Admin"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "lastSeenAt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "lastSeenAt",
+              "createdAt"
+            ]
+          }
+        ]
+      },
+      "CreateAdminRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_.-]{2,31}$"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 256
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "editor"
+            ]
+          }
+        },
+        "required": [
+          "username",
+          "password",
+          "role"
+        ]
+      },
+      "ActivityPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActivityEntry"
+            }
+          },
+          "nextBefore": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextBefore"
+        ]
+      },
+      "ActivityEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "action": {
+            "type": "string"
+          },
+          "target": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "details": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {}
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "admin": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "username"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "target",
+          "details",
+          "createdAt",
+          "admin"
+        ]
+      },
+      "ServerUpdates": {
+        "type": "object",
+        "properties": {
+          "current": {
+            "type": "string"
+          },
+          "latest": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "updateAvailable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "current",
+          "latest",
+          "url",
+          "updateAvailable"
+        ]
+      },
+      "InstanceContent": {
+        "type": "object",
+        "properties": {
+          "contentVersion": {
+            "type": "integer"
+          },
+          "minecraft": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "version"
+            ]
+          },
+          "loader": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vanilla",
+                  "fabric",
+                  "quilt",
+                  "forge",
+                  "neoforge"
+                ]
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "version"
+            ]
+          },
+          "managedDirs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstanceFile"
+            }
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updatedBy": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "username"
+            ]
+          }
+        },
+        "required": [
+          "contentVersion",
+          "minecraft",
+          "loader",
+          "managedDirs",
+          "files",
+          "updatedAt",
+          "updatedBy"
+        ]
+      },
+      "InstanceFile": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "policy": {
+            "type": "string",
+            "enum": [
+              "always",
+              "once"
+            ]
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "size",
+          "policy"
+        ]
+      },
+      "ApplyContent": {
+        "type": "object",
+        "properties": {
+          "expectedContentVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mcVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "loader": {
+            "type": "string",
+            "enum": [
+              "vanilla",
+              "fabric",
+              "quilt",
+              "forge",
+              "neoforge"
+            ]
+          },
+          "loaderVersion": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "managedDirs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "policy": {
+                  "type": "string",
+                  "enum": [
+                    "always",
+                    "once"
+                  ]
+                }
+              },
+              "required": [
+                "path",
+                "sha256",
+                "policy"
+              ]
+            },
+            "maxItems": 10000
+          }
+        },
+        "required": [
+          "expectedContentVersion",
+          "mcVersion",
+          "loader",
+          "loaderVersion",
+          "managedDirs",
+          "files"
+        ]
+      },
+      "WhitelistEntry": {
+        "type": "object",
+        "properties": {
+          "player": {
+            "$ref": "#/components/schemas/ListedPlayer"
+          },
+          "addedBy": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "username"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "player",
+          "addedBy",
+          "createdAt"
+        ]
+      },
+      "ListedPlayer": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "joined": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "uuid",
+          "name",
+          "joined"
+        ]
+      },
+      "AddToWhitelist": {
+        "type": "object",
+        "properties": {
+          "player": {
+            "type": "string",
+            "pattern": "^([A-Za-z0-9_]{1,16}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$"
+          }
+        },
+        "required": [
+          "player"
+        ]
+      },
+      "BlacklistEntry": {
+        "type": "object",
+        "properties": {
+          "player": {
+            "$ref": "#/components/schemas/ListedPlayer"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "expiresAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "addedBy": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "username"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "player",
+          "reason",
+          "expiresAt",
+          "addedBy",
+          "createdAt"
+        ]
+      },
+      "BanPlayer": {
+        "type": "object",
+        "properties": {
+          "player": {
+            "type": "string",
+            "pattern": "^([A-Za-z0-9_]{1,16}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "expiresAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "player",
+          "reason",
+          "expiresAt"
+        ]
+      },
+      "UpdateInstanceAccess": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "string",
+            "enum": [
+              "everyone",
+              "whitelist"
+            ]
+          }
+        },
+        "required": [
+          "access"
+        ]
+      },
+      "UploadedImage": {
+        "type": "object",
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "sha256",
+          "url"
+        ]
+      },
+      "NewsItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "instanceId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "imageSha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "link": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "username"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "instanceId",
+          "title",
+          "body",
+          "imageUrl",
+          "imageSha256",
+          "link",
+          "pinned",
+          "publishedAt",
+          "createdBy",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "SaveNews": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 150
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "imageSha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "link": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500,
+            "format": "uri"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "title",
+          "body",
+          "imageSha256",
+          "link",
+          "pinned",
+          "publishedAt"
+        ]
+      },
+      "PlayerPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlayerSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "launchableInstances": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "launchableInstances"
+        ]
+      },
+      "PlayerSummary": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "firstSeenAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "lastSeenAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "member",
+              "not_member",
+              "banned"
+            ]
+          },
+          "playableInstances": {
+            "type": "integer"
+          },
+          "instanceBans": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "uuid",
+          "name",
+          "firstSeenAt",
+          "lastSeenAt",
+          "status",
+          "playableInstances",
+          "instanceBans"
+        ]
+      },
+      "PlayerDetail": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "firstSeenAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "lastSeenAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "organization": {
+            "type": "object",
+            "properties": {
+              "visibility": {
+                "type": "string",
+                "enum": [
+                  "public",
+                  "private"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "member",
+                  "not_member",
+                  "banned"
+                ]
+              },
+              "whitelisted": {
+                "type": "boolean"
+              },
+              "ban": {
+                "$ref": "#/components/schemas/Ban"
+              }
+            },
+            "required": [
+              "visibility",
+              "status",
+              "whitelisted",
+              "ban"
+            ]
+          },
+          "instances": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "access": {
+                  "type": "string",
+                  "enum": [
+                    "everyone",
+                    "whitelist"
+                  ]
+                },
+                "launchable": {
+                  "type": "boolean"
+                },
+                "whitelisted": {
+                  "type": "boolean"
+                },
+                "ban": {
+                  "$ref": "#/components/schemas/Ban"
+                },
+                "visible": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "access",
+                "launchable",
+                "whitelisted",
+                "ban",
+                "visible"
+              ]
+            }
+          }
+        },
+        "required": [
+          "uuid",
+          "name",
+          "firstSeenAt",
+          "lastSeenAt",
+          "organization",
+          "instances"
+        ]
+      },
+      "Ban": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "expiresAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "addedBy": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "username"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "reason",
+          "expiresAt",
+          "addedBy",
+          "createdAt"
+        ]
+      },
+      "Instance": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "iconUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "backgroundUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "colors": {
+            "$ref": "#/components/schemas/InstanceColors"
+          },
+          "tabs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebTab"
+            }
+          },
+          "discordUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "webUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "serverAddress": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recommendedRamMb": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "access": {
+            "type": "string",
+            "enum": [
+              "everyone",
+              "whitelist"
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "minecraft": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "version"
+            ]
+          },
+          "loader": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vanilla",
+                  "fabric",
+                  "quilt",
+                  "forge",
+                  "neoforge"
+                ]
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "version"
+            ]
+          },
+          "contentVersion": {
+            "type": "integer"
+          },
+          "contentUpdatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "contentUpdatedBy": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "username"
+            ]
+          },
+          "fileCount": {
+            "type": "integer"
+          },
+          "totalSize": {
+            "type": "integer"
+          },
+          "playersWithAccess": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "iconUrl",
+          "backgroundUrl",
+          "colors",
+          "tabs",
+          "discordUrl",
+          "webUrl",
+          "serverAddress",
+          "recommendedRamMb",
+          "access",
+          "isActive",
+          "minecraft",
+          "loader",
+          "contentVersion",
+          "contentUpdatedAt",
+          "contentUpdatedBy",
+          "fileCount",
+          "totalSize",
+          "playersWithAccess",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "InstanceColors": {
+        "type": "object",
+        "properties": {
+          "primary": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          },
+          "primaryDark": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          },
+          "background": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          },
+          "text": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          }
+        },
+        "required": [
+          "primary",
+          "primaryDark",
+          "background",
+          "text"
+        ]
+      },
+      "WebTab": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 24
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "An http(s) URL. `{uuid}` and `{name}` are placeholders the launcher replaces with the signed-in player's uuid (lowercase with dashes) and Minecraft name."
+          },
+          "icon": {
+            "type": "string",
+            "enum": [
+              "map",
+              "trophy",
+              "calendar",
+              "book",
+              "chart",
+              "live",
+              "users",
+              "list",
+              "form",
+              "globe"
+            ]
+          },
+          "openIn": {
+            "type": "string",
+            "enum": [
+              "launcher",
+              "browser"
+            ]
+          }
+        },
+        "required": [
+          "label",
+          "url",
+          "icon",
+          "openIn"
+        ]
+      },
+      "CreateInstance": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "mcVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "loader": {
+            "type": "string",
+            "enum": [
+              "vanilla",
+              "fabric",
+              "quilt",
+              "forge",
+              "neoforge"
+            ]
+          },
+          "loaderVersion": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "mcVersion",
+          "loader",
+          "loaderVersion"
+        ]
+      },
+      "UpdateInstance": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "discordUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500,
+            "format": "uri"
+          },
+          "webUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500,
+            "format": "uri"
+          },
+          "serverAddress": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Za-z0-9.-]{1,253}(:\\d{1,5})?$"
+          },
+          "recommendedRamMb": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1024,
+            "maximum": 65536
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "discordUrl",
+          "webUrl",
+          "serverAddress",
+          "recommendedRamMb",
+          "isActive"
+        ]
+      },
+      "UpdateInstanceAppearance": {
+        "type": "object",
+        "properties": {
+          "colors": {
+            "$ref": "#/components/schemas/InstanceColors"
+          }
+        },
+        "required": [
+          "colors"
+        ]
+      },
+      "UpdateInstanceTabs": {
+        "type": "object",
+        "properties": {
+          "tabs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebTab"
+            },
+            "maxItems": 5
+          }
+        },
+        "required": [
+          "tabs"
+        ]
+      },
+      "CheckBlobsResult": {
+        "type": "object",
+        "properties": {
+          "missing": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "required": [
+          "missing"
+        ]
+      },
+      "CheckBlobs": {
+        "type": "object",
+        "properties": {
+          "sha256": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "maxItems": 10000
+          }
+        },
+        "required": [
+          "sha256"
+        ]
+      },
+      "UploadedBlob": {
+        "type": "object",
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "size": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sha256",
+          "size"
+        ]
+      },
+      "MinecraftVersion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "release",
+              "snapshot",
+              "old_beta",
+              "old_alpha"
+            ]
+          },
+          "releaseTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "releaseTime"
+        ]
+      },
+      "LoaderVersion": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "stable": {
+            "type": "boolean"
+          },
+          "recommended": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version",
+          "stable",
+          "recommended"
+        ]
+      },
+      "AuthChallenge": {
+        "type": "object",
+        "properties": {
+          "serverId": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "serverId",
+          "expiresAt"
+        ]
+      },
+      "PlayerSession": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "player": {
+            "$ref": "#/components/schemas/Player"
+          }
+        },
+        "required": [
+          "token",
+          "expiresAt",
+          "player"
+        ]
+      },
+      "Player": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "name"
+        ]
+      },
+      "VerifyRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_]{1,16}$"
+          },
+          "serverId": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          }
+        },
+        "required": [
+          "username",
+          "serverId"
+        ]
+      },
+      "LauncherInstance": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "iconUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "backgroundUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "colors": {
+            "$ref": "#/components/schemas/InstanceColors"
+          },
+          "tabs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebTab"
+            }
+          },
+          "discordUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "webUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "minecraft": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "version"
+            ]
+          },
+          "loader": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vanilla",
+                  "fabric",
+                  "quilt",
+                  "forge",
+                  "neoforge"
+                ]
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "version"
+            ]
+          },
+          "serverAddress": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recommendedRamMb": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "contentVersion": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "iconUrl",
+          "backgroundUrl",
+          "colors",
+          "tabs",
+          "discordUrl",
+          "webUrl",
+          "minecraft",
+          "loader",
+          "serverAddress",
+          "recommendedRamMb",
+          "contentVersion"
+        ]
+      },
+      "Manifest": {
+        "type": "object",
+        "properties": {
+          "contentVersion": {
+            "type": "integer"
+          },
+          "minecraft": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "version"
+            ]
+          },
+          "loader": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "vanilla",
+                  "fabric",
+                  "quilt",
+                  "forge",
+                  "neoforge"
+                ]
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "version"
+            ]
+          },
+          "server": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "address"
+            ]
+          },
+          "managedDirs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ManifestFile"
+            }
+          }
+        },
+        "required": [
+          "contentVersion",
+          "minecraft",
+          "loader",
+          "server",
+          "managedDirs",
+          "files"
+        ]
+      },
+      "ManifestFile": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "policy": {
+            "type": "string",
+            "enum": [
+              "always",
+              "once"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "size",
+          "policy",
+          "url"
+        ]
+      },
+      "PresenceRequest": {
+        "type": "object",
+        "properties": {
+          "instanceId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "instanceId"
+        ]
+      },
+      "LauncherNewsItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "link": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "body",
+          "imageUrl",
+          "link",
+          "pinned",
+          "publishedAt"
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/.well-known/bc-launcher": {
+      "get": {
+        "summary": "Organization discovery document",
+        "tags": [
+          "Discovery"
+        ],
+        "responses": {
+          "200": {
+            "description": "Public identity and capabilities of this organization's server.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoveryDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/setup": {
+      "get": {
+        "summary": "Whether the first owner still has to be created",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Setup status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetupStatus"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create the first owner and name the organization",
+        "description": "Only works while there are no admins. Signs the new owner in.",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Owner created and signed in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Admin"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Setup was already completed (`setup_completed`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/auth/login": {
+      "post": {
+        "summary": "Sign in with username and password",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signed in; the session cookie is set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Admin"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Wrong username or password (`invalid_credentials`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/auth/logout": {
+      "post": {
+        "summary": "Sign out and end the current session",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "204": {
+            "description": "Signed out."
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/auth/me": {
+      "get": {
+        "summary": "The signed-in admin",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "The signed-in admin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Admin"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/auth/password": {
+      "put": {
+        "summary": "Change your own password",
+        "description": "Ends every other session of this admin; the current one stays signed in.",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Password changed."
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The current password is wrong (`wrong_password`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/settings": {
+      "get": {
+        "summary": "The organization's settings",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "The organization's settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationSettings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Change the organization's settings (owner and admins)",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrganizationSettings"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The organization's settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationSettings"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the owner and admins can do this (`forbidden`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/settings/logo": {
+      "put": {
+        "summary": "Upload the organization's logo (owner and admins)",
+        "description": "PNG, JPEG, WebP or GIF, up to 2 MB, as the raw body.",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/gif": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The organization's settings with the new image.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationSettings"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not a PNG, JPEG, WebP or GIF image (`invalid_image`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the owner and admins can do this (`forbidden`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The image is too large (`image_too_large`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove the organization's logo (owner and admins)",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "The organization's settings without the image.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationSettings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the owner and admins can do this (`forbidden`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{sha256}": {
+      "get": {
+        "summary": "A public image (logo, instance icon or background, news image), addressed by its sha256",
+        "tags": [
+          "Launcher"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "required": true,
+            "name": "sha256",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The image. Immutable: cache it forever.",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/gif": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such asset (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/admins": {
+      "get": {
+        "summary": "Every admin account",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Accounts: the owner, then admins, then editors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminListItem"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an admin or editor account (owner and admins)",
+        "description": "The creator passes the password on to the new account, who can change it later.",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAdminRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminListItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the owner and admins can do this (`forbidden`), and nobody can act on the owner (`owner_protected`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The username is taken (`username_taken`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/admins/{id}/role": {
+      "put": {
+        "summary": "Make another account an admin or an editor (owner and admins, never the owner)",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "admin",
+                      "editor"
+                    ]
+                  }
+                },
+                "required": [
+                  "role"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The account with its new role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminListItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "You can't change your own role (`cannot_target_self`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the owner and admins can do this (`forbidden`), and nobody can act on the owner (`owner_protected`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such admin (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/admins/{id}/password": {
+      "put": {
+        "summary": "Reset another account's password (owner and admins, never the owner's)",
+        "description": "Ends every session of that admin.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Password reset."
+          },
+          "400": {
+            "description": "Use your own password change instead (`cannot_target_self`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the owner and admins can do this (`forbidden`), and nobody can act on the owner (`owner_protected`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such admin (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/admins/{id}": {
+      "delete": {
+        "summary": "Remove another account (owner and admins, never the owner)",
+        "description": "Ends every session of that admin.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed."
+          },
+          "400": {
+            "description": "You can't remove yourself (`cannot_target_self`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the owner and admins can do this (`forbidden`), and nobody can act on the owner (`owner_protected`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such admin (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/activity": {
+      "get": {
+        "summary": "The audit log, newest first",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "adminId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]+$"
+            },
+            "required": false,
+            "name": "type",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            "required": false,
+            "name": "before",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of entries.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/updates": {
+      "get": {
+        "summary": "Whether a newer server release is published",
+        "description": "Compares this server's version with the latest release on GitHub, checked at most every few hours. Owner and admins only.",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "The current and latest versions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerUpdates"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only the owner and admins can see this (`forbidden`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/content": {
+      "get": {
+        "summary": "An instance's current content",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The content.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstanceContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Replace an instance's content in one go",
+        "description": "Upload every file first (`blobs/check` + `PUT blobs/{sha256}`). The new file list, managed folders and versions replace the current ones in a single transaction and `contentVersion` goes up by one, so players get either the old content or the new one, never a mix. Changed Minecraft or loader versions are checked against the official metadata.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyContent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The new content.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstanceContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request (`validation_error`), paths that clash (`path_conflict`), or versions that don't exist (`invalid_version`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Someone applied a change since `expectedContentVersion` (`content_conflict`), or some files aren't uploaded (`missing_blobs`, listed in `detail`). Nothing changed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The official metadata couldn't be fetched to check the versions (`metadata_unavailable`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/whitelist": {
+      "get": {
+        "summary": "The organization's whitelist (only used while it is private)",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "The entries, newest first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WhitelistEntry"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a player to the organization's whitelist",
+        "description": "By Minecraft name (looked up at Mojang, so players can be added before they ever join) or uuid.",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToWhitelist"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new entry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhitelistEntry"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Minecraft player with that name or uuid (`player_not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Already on the whitelist (`already_listed`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Mojang couldn't be reached to look the player up (`mojang_unavailable`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/whitelist/{uuid}": {
+      "delete": {
+        "summary": "Remove a player from the organization's whitelist",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "required": true,
+            "name": "uuid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed."
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not on the whitelist (`not_listed`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/blacklist": {
+      "get": {
+        "summary": "Players banned from the organization",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "The active bans, newest first (expired ones no longer count).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlacklistEntry"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Ban a player from the organization",
+        "description": "By Minecraft name or uuid. Banning someone already banned replaces the reason and the expiry. A ban doesn't remove anyone from a whitelist: when it ends, the player gets back the access they had. The launcher shows them the same as a non-member (`not_member`).",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BanPlayer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The ban.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlacklistEntry"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, or an expiry that isn't in the future (`invalid_expiry`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Minecraft player with that name or uuid (`player_not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Mojang couldn't be reached to look the player up (`mojang_unavailable`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/blacklist/{uuid}": {
+      "delete": {
+        "summary": "Lift a player's organization ban",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "required": true,
+            "name": "uuid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed."
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not banned (`not_listed`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/whitelist": {
+      "get": {
+        "summary": "An instance's whitelist (only used while its access is `whitelist`)",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The entries, newest first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WhitelistEntry"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a player to an instance's whitelist",
+        "description": "By Minecraft name (looked up at Mojang, so players can be added before they ever join) or uuid.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToWhitelist"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new entry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhitelistEntry"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`), or no Minecraft player with that name or uuid (`player_not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Already on the whitelist (`already_listed`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Mojang couldn't be reached to look the player up (`mojang_unavailable`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/whitelist/{uuid}": {
+      "delete": {
+        "summary": "Remove a player from an instance's whitelist",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "required": true,
+            "name": "uuid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed."
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`), or not on the whitelist (`not_listed`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/blacklist": {
+      "get": {
+        "summary": "Players banned from an instance",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The active bans, newest first (expired ones no longer count).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlacklistEntry"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Ban a player from an instance",
+        "description": "By Minecraft name or uuid. Banning someone already banned replaces the reason and the expiry. A ban doesn't remove anyone from a whitelist: when it ends, the player gets back the access they had. The instance becomes invisible to them.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BanPlayer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The ban.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlacklistEntry"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, or an expiry that isn't in the future (`invalid_expiry`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`), or no Minecraft player with that name or uuid (`player_not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Mojang couldn't be reached to look the player up (`mojang_unavailable`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/blacklist/{uuid}": {
+      "delete": {
+        "summary": "Lift a player's instance ban",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "required": true,
+            "name": "uuid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed."
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`), or not banned (`not_listed`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/access": {
+      "put": {
+        "summary": "Choose who can play an instance",
+        "description": "`everyone`: every member of the organization. `whitelist`: only the players on the instance's whitelist; for everyone else it is invisible. Bans win in both cases.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInstanceAccess"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access": {
+                      "type": "string",
+                      "enum": [
+                        "everyone",
+                        "whitelist"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "access"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/images": {
+      "post": {
+        "summary": "Upload an image to use in a news item",
+        "description": "PNG, JPEG, WebP or GIF, up to 2 MB, as the raw body. Images that nothing uses are deleted after 24 hours.",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/gif": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The stored image.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadedImage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not a PNG, JPEG, WebP or GIF image (`invalid_image`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The image is too large (`image_too_large`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/news": {
+      "get": {
+        "summary": "An instance's news, scheduled ones included",
+        "description": "Pinned first, then newest first.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The news.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NewsItem"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Publish or schedule a news item",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveNews"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new item.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, or `imageSha256` isn't an uploaded image (`invalid_image`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/news/{newsId}": {
+      "put": {
+        "summary": "Change a news item",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "newsId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveNews"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated item.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, or `imageSha256` isn't an uploaded image (`invalid_image`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance or news item (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a news item",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "newsId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted."
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance or news item (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/players": {
+      "get": {
+        "summary": "Players, most recently seen first",
+        "description": "Everyone who signed in with the launcher, plus players added to a list by name who never joined.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 50
+            },
+            "required": false,
+            "name": "q",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "member",
+                "banned",
+                "not_member",
+                "joined",
+                "never_joined"
+              ],
+              "default": "all"
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 40
+            },
+            "required": false,
+            "name": "instance",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "default": 0
+            },
+            "required": false,
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of players.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/players/{uuid}": {
+      "get": {
+        "summary": "A player and their access to the organization and each instance",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "required": true,
+            "name": "uuid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The player.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such player (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances": {
+      "get": {
+        "summary": "Every instance, newest first",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "The instances.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Instance"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an instance with BC Launcher's default appearance and no content",
+        "description": "The Minecraft and loader versions are checked against the official metadata. The new instance has `mods` as a managed folder and stays hidden in the launcher until content is applied.",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInstance"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new instance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, or a Minecraft or loader version that doesn't exist (`invalid_version`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "An instance with that id already exists (`instance_exists`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The official metadata couldn't be fetched to check the versions (`metadata_unavailable`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}": {
+      "get": {
+        "summary": "An instance",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The instance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Change an instance's details",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInstance"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated instance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an instance and its content",
+        "description": "Its blobs are deleted later by the orphan cleanup if nothing else uses them.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted."
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/appearance": {
+      "put": {
+        "summary": "Change an instance's colors",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInstanceAppearance"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated instance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/tabs": {
+      "put": {
+        "summary": "Replace an instance's web tabs",
+        "description": "The full list, in the order the launcher shows them (up to 5).",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInstanceTabs"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated instance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/instances/{id}/{kind}": {
+      "put": {
+        "summary": "Upload an instance's icon or background",
+        "description": "PNG, JPEG, WebP or GIF as the raw body: up to 2 MB for the icon, 8 MB for the background.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "icon",
+                "background"
+              ]
+            },
+            "required": true,
+            "name": "kind",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/gif": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The instance with the new image.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not a PNG, JPEG, WebP or GIF image (`invalid_image`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The image is too large (`image_too_large`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove an instance's icon, or reset its background to the default one",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "icon",
+                "background"
+              ]
+            },
+            "required": true,
+            "name": "kind",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated instance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/blobs/check": {
+      "post": {
+        "summary": "Which of these files the server doesn't have yet",
+        "description": "Files the server already has get another 24 h before the orphan cleanup can delete them, so they can be applied without uploading them again.",
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckBlobs"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The missing hashes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckBlobsResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/blobs/{sha256}": {
+      "put": {
+        "summary": "Upload a file, addressed by its sha256",
+        "description": "The raw bytes, up to 100 MB, with a `Content-Length`. The server hashes them while storing and refuses them if they don't match. A file the server already has is not read again. Uploaded files are invisible until content that uses them is applied.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "required": true,
+            "name": "sha256",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stored (or already there).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadedBlob"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The bytes don't match the sha256 or the `Content-Length` (`hash_mismatch`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "411": {
+            "description": "The request has no `Content-Length` (`length_required`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The file is too large (`blob_too_large`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/minecraft/versions": {
+      "get": {
+        "summary": "Minecraft versions, newest first (from Mojang's version manifest)",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "default": "false"
+            },
+            "required": false,
+            "name": "all",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The versions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "versions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MinecraftVersion"
+                      }
+                    }
+                  },
+                  "required": [
+                    "versions"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The official metadata couldn't be fetched (`metadata_unavailable`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/loaders/{type}/versions": {
+      "get": {
+        "summary": "A loader's versions for a Minecraft version, newest first",
+        "description": "From the loader's official metadata (Fabric and Quilt meta, Forge and NeoForge maven), cached for a few minutes. Empty if the loader doesn't support that Minecraft version.",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "fabric",
+                "quilt",
+                "forge",
+                "neoforge"
+              ]
+            },
+            "required": true,
+            "name": "type",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "mc",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The versions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "versions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LoaderVersion"
+                      }
+                    }
+                  },
+                  "required": [
+                    "versions"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in (`unauthenticated`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The official metadata couldn't be fetched (`metadata_unavailable`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/challenge": {
+      "post": {
+        "summary": "Start signing a player in",
+        "description": "Returns a `serverId` valid for 5 minutes. The launcher calls Mojang's `join` with it (the Minecraft token never leaves the launcher) and then `verify`.",
+        "tags": [
+          "Launcher"
+        ],
+        "responses": {
+          "200": {
+            "description": "The challenge.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthChallenge"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify": {
+      "post": {
+        "summary": "Finish signing a player in",
+        "description": "Checks with Mojang (`hasJoined`) that the player joined with the challenge's `serverId`. When discovery's `auth.type` is `unverified`, the server can't reach Mojang and only looks the name up, trusting it. Members get a token and are recorded as players; non-members aren't recorded. Signing in isn't an access: the launcher reports entering an instance with `POST /api/v1/presence`.",
+        "tags": [
+          "Launcher"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signed in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerSession"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The challenge is invalid or expired (`invalid_challenge`), or Mojang says the player didn't join with it (`not_joined`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The player isn't a member of the organization (`not_member`): not on the whitelist of a private organization, or banned. Both cases look the same.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Mojang's session server couldn't be reached (`mojang_unavailable`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/instances": {
+      "get": {
+        "summary": "The instances the player can play, newest first",
+        "description": "Active instances with content that the player can play: not banned from it, and it is open to every member or the player is on its whitelist. Instances opened to the player later appear here on their own.",
+        "tags": [
+          "Launcher"
+        ],
+        "security": [
+          {
+            "playerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The instances.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "instances": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LauncherInstance"
+                      }
+                    }
+                  },
+                  "required": [
+                    "instances"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No token, or an invalid or expired one (`unauthenticated`): sign in again with `challenge` and `verify`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The player isn't a member of the organization (`not_member`): not on the whitelist of a private organization, or banned. Both cases look the same.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/instances/{id}/manifest": {
+      "get": {
+        "summary": "What to sync into the instance folder",
+        "description": "Send the last `ETag` in `If-None-Match` to get `304` while nothing changed. The ETag changes with `contentVersion` and when the download URLs are renewed.",
+        "tags": [
+          "Launcher"
+        ],
+        "security": [
+          {
+            "playerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The manifest.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Manifest"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified."
+          },
+          "401": {
+            "description": "No token, or an invalid or expired one (`unauthenticated`): sign in again with `challenge` and `verify`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The player isn't a member of the organization (`not_member`): not on the whitelist of a private organization, or banned. Both cases look the same.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance, or the player can't see it (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/presence": {
+      "post": {
+        "summary": "Record that the player entered an instance",
+        "description": "Moves the player's last access to the organization (and sets the first one) when they enter one of its instances they can play. The launcher calls it only then: opening the organization or background requests, such as listing the instances of every added organization, don't count.",
+        "tags": [
+          "Launcher"
+        ],
+        "security": [
+          {
+            "playerToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresenceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Recorded."
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No token, or an invalid or expired one (`unauthenticated`): sign in again with `challenge` and `verify`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The player isn't a member of the organization (`not_member`): not on the whitelist of a private organization, or banned. Both cases look the same.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance, or the player can't see it (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/blobs/{sha256}": {
+      "get": {
+        "summary": "Download a file from a manifest's signed URL",
+        "tags": [
+          "Launcher"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "required": true,
+            "name": "sha256",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            "required": true,
+            "name": "exp",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "required": true,
+            "name": "sig",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The file. Immutable.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The signature is wrong (`invalid_signature`) or the URL expired (`url_expired`): fetch the manifest again.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such file (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/instances/{id}/news": {
+      "get": {
+        "summary": "An instance's published news",
+        "description": "Pinned first, then newest first, 20 per page; pass `nextCursor` as `cursor` for the next page. Scheduled news doesn't appear until its time.",
+        "tags": [
+          "Launcher"
+        ],
+        "security": [
+          {
+            "playerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "required": false,
+            "name": "cursor",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of news.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LauncherNewsItem"
+                      }
+                    },
+                    "nextCursor": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, or a cursor that isn't one of ours (`invalid_cursor`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No token, or an invalid or expired one (`unauthenticated`): sign in again with `challenge` and `verify`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The player isn't a member of the organization (`not_member`): not on the whitelist of a private organization, or banned. Both cases look the same.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such instance, or the player can't see it (`not_found`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {}
+}

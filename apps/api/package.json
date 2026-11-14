@@ -1,0 +1,32 @@
+{
+  "name": "@bc-launcher-server/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "dev:node": "tsx watch --env-file-if-exists=.env src/entry/node.ts",
+    "build:node": "esbuild src/entry/node.ts --bundle --platform=node --format=esm --target=node22 --external:@libsql/client --outfile=dist/node.js",
+    "typecheck": "tsc -p tsconfig.common.json && tsc -p tsconfig.node.json && tsc -p tsconfig.worker.json",
+    "test": "vitest run",
+    "openapi": "tsx scripts/openapi.ts"
+  },
+  "dependencies": {
+    "@bc-launcher-server/contracts": "workspace:*",
+    "@bc-launcher-server/db": "workspace:*",
+    "@hono/node-server": "2.1.6",
+    "@hono/zod-openapi": "1.6.3",
+    "@libsql/client": "0.18.0",
+    "drizzle-orm": "0.45.4",
+    "hono": "4.13.16",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261103.1",
+    "@types/node": "22.20.5",
+    "esbuild": "0.28.2",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.1.0"
+  }
+}
